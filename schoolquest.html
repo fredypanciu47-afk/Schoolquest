@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SchoolQuest — Apprendre en jouant</title>
+<style>
+:root{--bg:#0b1020;--card:#141b33;--card2:#1b2447;--text:#eaf0ff;--muted:#9aa7c7;--blue:#4f7cff;--green:#2fd07a;--gold:#ffc93c;--red:#ff5d73;--purple:#a06bff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:radial-gradient(1200px 700px at 80% -10%,#1c2a5c 0%,transparent 60%),radial-gradient(900px 600px at 0% 100%,#27225a 0%,transparent 55%),var(--bg);color:var(--text);min-height:100vh}
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:14px 18px;background:rgba(11,16,32,.85);backdrop-filter:blur(10px);border-bottom:1px solid #ffffff14}
+.logo{font-weight:900;font-size:20px;letter-spacing:.5px}
+.logo span{color:var(--gold)}
+.spacer{flex:1}
+.pill{background:var(--card2);border:1px solid #ffffff14;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:700}
+.pill b{color:var(--gold)}
+nav{display:flex;gap:8px;overflow:auto;padding:12px 16px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:1px solid #ffffff18;background:var(--card);color:var(--text);padding:10px 14px;border-radius:14px;font-weight:800;cursor:pointer;transition:.15s}
+.tab:hover{transform:translateY(-2px)}
+.tab.active{background:linear-gradient(135deg,var(--blue),var(--purple));border-color:transparent;box-shadow:0 8px 24px #4f7cff44}
+main{max-width:1100px;margin:0 auto;padding:18px 16px 80px}
+.hero{background:linear-gradient(135deg,#1d2a5e,#3a2a6e);border:1px solid #ffffff18;border-radius:22px;padding:22px;margin-bottom:18px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(24px,5vw,38px);line-height:1.1;margin-bottom:8px}
+.hero p{color:#c9d4f5;max-width:640px}
+.cta{display:inline-flex;align-items:center;gap:8px;margin-top:14px;background:var(--gold);color:#202020;border:none;padding:12px 18px;border-radius:12px;font-weight:900;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid #ffffff14;border-radius:18px;padding:16px;cursor:pointer;transition:.18s}
+.card:hover{transform:translateY(-3px);border-color:#ffffff30;box-shadow:0 14px 30px #0004}
+.emoji{font-size:30px}
+.card h3{margin:8px 0 4px}
+.card p{color:var(--muted);font-size:13px}
+.bar{height:8px;background:#ffffff14;border-radius:99px;margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green))}
+.section{margin-top:22px}
+.section h2{font-size:20px;margin-bottom:10px}
+.panel{background:var(--card);border:1px solid #ffffff14;border-radius:18px;padding:16px}
+.hidden{display:none!important}
+.question{font-size:20px;font-weight:800;margin:10px 0 16px}
+.answers{display:grid;gap:10px}
+.answer{width:100%;text-align:left;background:var(--card2);border:1px solid #ffffff18;color:var(--text);padding:14px;border-radius:14px;font-size:15px;font-weight:600;cursor:pointer;transition:.15s}
+.answer:hover{border-color:var(--blue);transform:translateX(3px)}
+.answer.correct{background:#123c2a;border-color:var(--green)}
+.answer.wrong{background:#3d1a24;border-color:var(--red)}
+.progress{height:10px;background:#ffffff14;border-radius:99px;overflow:hidden;margin:10px 0}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--gold));transition:.3s}
+.feedback{min-height:24px;font-weight:800;margin-top:10px}
+.btn{background:linear-gradient(135deg,var(--blue),var(--purple));border:none;color:#fff;padding:12px 16px;border-radius:12px;font-weight:900;cursor:pointer}
+.btn.ghost{background:var(--card2);border:1px solid #ffffff18}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px;border-bottom:1px solid #ffffff10;text-align:left}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+.rank1{color:var(--gold);font-weight:900}
+.rank2{color:#cfd8ff}.rank3{color:#e0a06b}
+.badge{display:inline-block;background:#ffffff10;border:1px solid #ffffff18;border-radius:99px;padding:6px 10px;margin:4px 4px 0 0;font-size:12px;font-weight:800}
+.badge.locked{opacity:.4}
+.big{font-size:34px;font-weight:900}
+.stat{background:var(--card2);border:1px solid #ffffff14;border-radius:14px;padding:12px;min-width:120px}
+.stat small{color:var(--muted);display:block}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(120px);background:#101736;border:1px solid #ffffff20;padding:12px 18px;border-radius:14px;font-weight:800;box-shadow:0 16px 40px #0007;z-index:99;transition:.3s}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:98}
+.confetti i{position:absolute;width:9px;height:14px;opacity:.9;animation:fall 2.4s linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:0}}
+input,select{background:var(--card2);border:1px solid #ffffff18;color:var(--text);padding:11px;border-radius:12px;font-size:14px;width:100%}
+label{font-size:12px;color:var(--muted);font-weight:800;display:block;margin-bottom:5px}
+.modal{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal .box{background:var(--card);border:1px solid #ffffff20;border-radius:20px;padding:22px;max-width:420px;width:100%}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">🎓 School<span>Quest</span></div>
+<div class="spacer"></div>
+<div class="pill">⚡ <b id="xp">0</b> XP</div>
+<div class="pill">🔥 Série <b id="streak">0</b></div>
+<div class="pill">🥇 <b id="level">1</b></div>
+<button class="btn ghost" onclick="openProfile()">👤 Profil</button>
+</header>
+
+<nav id="tabs"></nav>
+<main>
+<section id="home" class="page">
+<div class="hero">
+<h1>Apprends en jouant.<br>Gagne des XP. Monte dans le classement.</h1>
+<p>Des quiz, défis chronométrés et mini-jeux dans toutes les matières. Tes points sont enregistrés automatiquement sur ton appareil, et le classement se met à jour dès que ton score change.</p>
+<button class="cta" onclick="go('matieres')">🚀 Commencer une mission</button>
+</div>
+<div class="section"><h2>Tes statistiques</h2>
+<div class="row">
+<div class="stat"><span class="big" id="s-quiz">0</span><small>quiz terminés</small></div>
+<div class="stat"><span class="big" id="s-correct">0</span><small>bonnes réponses</small></div>
+<div class="stat"><span class="big" id="s-accuracy">0%</span><small>précision</small></div>
+<div class="stat"><span class="big" id="s-rank">—</span><small>ton rang</small></div>
+</div></div>
+<div class="section"><h2>Matières</h2><div class="grid" id="subjectGrid"></div></div>
+<div class="section"><h2>Trophées</h2><div class="panel" id="badges"></div></div>
+</section>
+
+<section id="matieres" class="page hidden">
+<h2>Choisis une matière</h2>
+<div class="grid" id="allSubjects"></div>
+</section>
+
+<section id="quiz" class="page hidden">
+<div class="panel">
+<div class="row"><div><b id="quizTitle">Quiz</b><br><small id="quizMeta" style="color:var(--muted)"></small></div><div class="pill">⚡ <b id="quizXp">0</b> XP</div></div>
+<div class="progress"><i id="qbar"></i></div>
+<div id="quizBody"></div>
+<div class="feedback" id="feedback"></div>
+<div class="row" style="margin-top:12px"><button class="btn ghost" onclick="go('matieres')">Quitter</button><button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>Suivant →</button></div>
+</div>
+</section>
+
+<section id="classement" class="page hidden">
+<h2>Classement</h2>
+<p style="color:var(--muted);margin-bottom:12px">Le classement se met à jour automatiquement à chaque bonne réponse et chaque quiz terminé. Ton score est conservé sur cet appareil.</p>
+<div class="panel"><table><thead><tr><th>Rang</th><th>Joueur</th><th>XP</th><th>Précision</th><th>Quiz</th></tr></thead><tbody id="lbBody"></tbody></table></div>
+</section>
+
+<section id="recompenses" class="page hidden">
+<h2>Récompenses</h2>
+<div class="panel"><h3>Trophées</h3><div id="badges2"></div></div>
+<div class="panel" style="margin-top:14px"><h3>Boutique de récompenses</h3><p style="color:var(--muted);margin-bottom:10px">Dépense tes XP pour débloquer des thèmes et des titres.</p><div id="shop"></div></div>
+</section>
+</main>
+
+<div id="profileModal" class="modal hidden"><div class="box">
+<h2>👤 Ton profil</h2>
+<label>Pseudo</label><input id="nameInput" maxlength="18" placeholder="Ton pseudo">
+<label style="margin-top:12px">Avatar</label>
+<select id="avatarInput"><option>🦊</option><option>🐼</option><option>🦁</option><option>🐸</option><option>🦄</option><option>🚀</option><option>🤖</option><option>🐉</option></select>
+<div style="display:flex;gap:10px;margin-top:16px"><button class="btn" onclick="saveProfile()">Enregistrer</button><button class="btn ghost" onclick="closeProfile()">Fermer</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+const SUBJECTS=[
+{id:"fr",name:"Français",emoji:"📚",color:"#4f7cff",desc:"Orthographe, grammaire, conjugaison et vocabulaire."},
+{id:"hg",name:"Histoire-Géo",emoji:"🌍",color:"#2fd07a",desc:"Histoire, géographie, citoyenneté et repères."},
+{id:"math",name:"Mathématiques",emoji:"➗",color:"#ffc93c",desc:"Calcul mental, fractions, géométrie et logique."},
+{id:"svt",name:"SVT",emoji:"🧬",color:"#2fd07a",desc:"Corps humain, nature, énergie et environnement."},
+{id:"physique",name:"Physique-Chimie",emoji:"⚗️",color:"#a06bff",desc:"Matière, énergie, forces et réactions."},
+{id:"tech",name:"Technologie",emoji:"🛠️",color:"#4f7cff",desc:"Numérique, objets connectés, algorithmes et sécurité."},
+{id:"anglais",name:"Anglais",emoji:"🇬🇧",color:"#ff5d73",desc:"Vocabulaire, grammaire et compréhension."},
+{id:"arts",name:"Arts & Musique",emoji:"🎨",color:"#a06bff",desc:"Couleurs, instruments, œuvres et culture."}
+];
+const BANK={
+fr:[
+{q:"Quel mot est correctement orthographié ?",a:["Accueillir","Acceuillir","Acueillir","Accueillir"],c:0,e:"On écrit « accueillir » avec deux c et deux l."},
+{q:"Dans « Les enfants jouent », quel est le verbe ?",a:["Les","enfants","jouent","rien"],c:2,e:"« Jouent » est le verbe conjugué."},
+{q:"Quel est le pluriel de « cheval » ?",a:["Chevals","Chevaux","Cheveaux","Chevaus"],c:1,e:"Le pluriel est « chevaux »."},
+{q:"Quel mot est un adjectif ?",a:["Rapidement","Rapide","Rapidité","Rapider"],c:1,e:"« Rapide » décrit un nom."},
+{q:"Complète : « Hier, il ___ à la piscine. »",a:["va","vais","est allé","aller"],c:2,e:"Au passé, on emploie « est allé »."},
+{q:"Quel mot est un synonyme de « content » ?",a:["Triste","Joyeux","Fatigué","Fâché"],c:1,e:"« Joyeux » signifie content."},
+{q:"Quelle phrase est correcte ?",a:["Il mange des pommes.","Il mange de pommes.","Il mangent des pommes.","Il mange des pomme."],c:0,e:"« Il mange des pommes » est correct."}
+],
+hg:[
+{q:"En quelle année a commencé la Première Guerre mondiale ?",a:["1914","1939","1870","1945"],c:0,e:"La Première Guerre mondiale commence en 1914."},
+{q:"Quel continent se trouve majoritairement dans l’hémisphère Sud ?",a:["Europe","Asie","Amérique du Sud","Amérique du Nord"],c:2,e:"L’Amérique du Sud est surtout dans l’hémisphère Sud."},
+{q:"Qui était Napoléon Bonaparte ?",a:["Un roi d’Espagne","Un empereur français","Un explorateur portugais","Un président américain"],c:1,e:"Napoléon Ier fut empereur des Français."},
+{q:"Quel est le plus grand océan du monde ?",a:["Atlantique","Indien","Pacifique","Arctique"],c:2,e:"Le Pacifique est le plus vaste océan."},
+{q:"La Révolution française commence en…",a:["1789","1799","1815","1848"],c:0,e:"Elle débute en 1789."},
+{q:"Quelle est la capitale du Japon ?",a:["Pékin","Séoul","Tokyo","Bangkok"],c:2,e:"La capitale du Japon est Tokyo."},
+{q:"Quel document garantit des droits fondamentaux en France ?",a:["La Constitution","Le permis","Le passeport","La carte vitale"],c:0,e:"La Constitution fixe les règles et droits fondamentaux."}
+],
+math:[
+{q:"Combien font 7 × 8 ?",a:["54","56","63","48"],c:1,e:"7 × 8 = 56."},
+{q:"Quelle fraction vaut 0,5 ?",a:["1/4","1/2","2/3","3/4"],c:1,e:"0,5 = 1/2."},
+{q:"Quel est le périmètre d’un carré de 5 cm de côté ?",a:["10 cm","20 cm","25 cm","15 cm"],c:1,e:"Périmètre = 4 × 5 = 20 cm."},
+{q:"Combien font 144 ÷ 12 ?",a:["11","12","13","14"],c:1,e:"144 ÷ 12 = 12."},
+{q:"Quel nombre est premier ?",a:["9","15","17","21"],c:2,e:"17 n’a que 1 et 17 comme diviseurs."},
+{q:"L’aire d’un rectangle de 6 m sur 4 m est…",a:["10 m²","20 m²","24 m²","12 m²"],c:2,e:"Aire = 6 × 4 = 24 m²."},
+{q:"Suite : 2, 4, 8, 16, … ?",a:["18","24","32","30"],c:2,e:"On double : 16 × 2 = 32."}
+],
+svt:[
+{q:"Quel organe pompe le sang ?",a:["Le poumon","Le cœur","Le foie","Le rein"],c:1,e:"Le cœur pompe le sang dans le corps."},
+{q:"Les plantes produisent du dioxygène grâce à…",a:["La respiration","La photosynthèse","La digestion","L’évaporation"],c:1,e:"La photosynthèse libère du dioxygène."},
+{q:"Quel organe permet de respirer ?",a:["Le cœur","Les poumons","L’estomac","Le cerveau"],c:1,e:"Les poumons assurent les échanges gazeux."},
+{q:"Qu’est-ce qu’un herbivore ?",a:["Un animal qui mange de la viande","Un animal qui mange des plantes","Un animal qui mange tout","Un animal qui ne mange pas"],c:1,e:"Un herbivore mange des végétaux."},
+{q:"Quelle planète possède la vie connue à ce jour ?",a:["Mars","Vénus","La Terre","Jupiter"],c:2,e:"La Terre est la seule planète avec vie connue."},
+{q:"Le squelette sert surtout à…",a:["Digérer","Soutenir le corps","Pomper le sang","Penser"],c:1,e:"Il soutient et protège le corps."},
+{q:"Qu’est-ce qu’un écosystème ?",a:["Un seul animal","Un milieu et ses êtres vivants","Une usine","Un nuage"],c:1,e:"C’est un milieu avec ses êtres vivants et leur environnement."}
+],
+physique:[
+{q:"Quelle est l’unité de la force ?",a:["Le watt","Le newton","Le joule","Le volt"],c:1,e:"La force se mesure en newtons (N)."},
+{q:"L’eau bout à quelle température au niveau de la mer ?",a:["50 °C","80 °C","100 °C","120 °C"],c:2,e:"Elle bout à 100 °C environ à pression normale."},
+{q:"Quel état de l’eau à 0 °C ?",a:["Gaz","Liquide","Solide","Plasma"],c:2,e:"À 0 °C, l’eau peut être solide : la glace."},
+{q:"Quelle énergie utilise une lampe ?",a:["Énergie électrique","Énergie nucléaire","Énergie sonore","Énergie chimique"],c:0,e:"Une lampe transforme l’énergie électrique en lumière et chaleur."},
+{q:"L’aimant attire surtout…",a:["Le bois","Le plastique","Le fer","Le verre"],c:2,e:"Le fer est attiré par les aimants."},
+{q:"Quelle est l’unité de la masse ?",a:["Le mètre","Le kilogramme","La seconde","Le litre"],c:1,e:"La masse se mesure en kilogrammes."},
+{q:"Un circuit électrique fermé permet…",a:["De couper le courant","Au courant de circuler","De refroidir l’air","De mesurer la masse"],c:1,e:"Un circuit fermé laisse passer le courant."}
+],
+tech:[
+{q:"Que fait un algorithme ?",a:["Il donne une suite d’instructions","Il refroidit un ordinateur","Il imprime du papier","Il remplace Internet"],c:0,e:"Un algorithme est une suite d’étapes pour résoudre un problème."},
+{q:"Que signifie « sauvegarder » ?",a:["Effacer définitivement","Enregistrer une copie","Imprimer","Éteindre"],c:1,e:"Sauvegarder consiste à enregistrer des données."},
+{q:"Quel dispositif sert à entrer du texte ?",a:["L’écran","Le clavier","L’imprimante","Le haut-parleur"],c:1,e:"Le clavier permet de saisir du texte."},
+{q:"Un mot de passe doit être…",a:["Simple et partagé","Long, unique et secret","Ton prénom","1234"],c:1,e:"Il doit être long, unique et ne jamais être partagé."},
+{q:"Qu’est-ce qu’un robot programmable ?",a:["Une machine qui suit des instructions","Un animal","Un meuble","Un nuage"],c:0,e:"Il exécute un programme donné."},
+{q:"Que veut dire « capteur » ?",a:["Un appareil qui mesure une information","Un écran","Une souris","Un câble"],c:0,e:"Un capteur mesure température, lumière, distance, etc."},
+{q:"Que faire face à un message inconnu demandant ton mot de passe ?",a:["Le donner","Répondre vite","Ne pas répondre et le signaler","Le partager"],c:2,e:"Ne jamais communiquer ses identifiants."}
+],
+anglais:[
+{q:"« Chat » en anglais ?",a:["Dog","Cat","Bird","Fish"],c:1,e:"« Cat » signifie chat."},
+{q:"Complète : « She ___ to school every day. »",a:["go","goes","going","gone"],c:1,e:"À la 3e personne, on dit « goes »."},
+{q:"Quel mot veut dire « livre » ?",a:["Book","Pen","Bag","Door"],c:0,e:"« Book » = livre."},
+{q:"« Hier » en anglais ?",a:["Tomorrow","Today","Yesterday","Now"],c:2,e:"« Yesterday » = hier."},
+{q:"Quel est le pluriel de « child » ?",a:["Childs","Children","Childes","Child"],c:1,e:"Le pluriel irrégulier est « children »."},
+{q:"« Je suis heureux » se dit…",a:["I am happy","I am sad","I am tired","I am hungry"],c:0,e:"« Happy » signifie heureux."},
+{q:"Quelle couleur est « blue » ?",a:["Rouge","Bleu","Vert","Jaune"],c:1,e:"« Blue » = bleu."}
+],
+arts:[
+{q:"Quelles couleurs sont primaires ?",a:["Rouge, bleu, jaune","Vert, orange, violet","Noir, blanc, gris","Rose, marron, beige"],c:0,e:"Rouge, bleu et jaune sont les couleurs primaires."},
+{q:"Qui a peint la Joconde ?",a:["Van Gogh","Léonard de Vinci","Picasso","Monet"],c:1,e:"Léonard de Vinci a peint La Joconde."},
+{q:"Quel instrument a des cordes ?",a:["Tambour","Guitare","Flûte","Trompette"],c:1,e:"La guitare possède des cordes."},
+{q:"Le mélange de bleu et de jaune donne…",a:["Rouge","Vert","Violet","Orange"],c:1,e:"Bleu + jaune = vert."},
+{q:"Quel artiste est célèbre pour les tournesols ?",a:["Van Gogh","Mozart","Beethoven","Shakespeare"],c:0,e:"Vincent van Gogh a peint des séries de tournesols."},
+{q:"Le rythme en musique correspond à…",a:["La couleur","La durée des sons","Le volume du tableau","Le prix du billet"],c:1,e:"Le rythme organise la durée des sons."},
+{q:"Qu’est-ce qu’un portrait ?",a:["Un paysage","Une représentation d’une personne","Une sculpture abstraite","Un instrument"],c:1,e:"Un portrait représente une personne."}
+]
+};
+const BADGES=[
+{id:"first",name:"Premier pas",emoji:"🌱",need:1,desc:"Terminer 1 quiz"},
+{id:"ten",name:"Explorateur",emoji:"🧭",need:10,desc:"Terminer 10 quiz"},
+{id:"perfect",name:"Sans faute",emoji:"🎯",desc:"Réussir un quiz à 100 %"},
+{id:"xp500",name:"Étudiant assidu",emoji:"📘",needXp:500,desc:"Atteindre 500 XP"},
+{id:"xp2000",name:"Champion",emoji:"🏆",needXp:2000,desc:"Atteindre 2000 XP"},
+{id:"streak5",name:"Régulier",emoji:"🔥",needStreak:5,desc:"Série de 5 bonnes réponses"},
+{id:"all",name:"Polyvalent",emoji:"🌈",desc:"Jouer dans 5 matières"}
+];
+const SHOP=[
+{id:"theme_night",name:"Thème Nuit profonde",cost:300,desc:"Change l’ambiance du site"},
+{id:"title_scholar",name:"Titre : Érudit",cost:500,desc:"Affiche le titre Érudit"},
+{id:"title_master",name:"Titre : Maître du Quiz",cost:1200,desc:"Affiche un titre rare"},
+{id:"theme_gold",name:"Thème Or",cost:2000,desc:"Interface dorée"}
+];
+const DEFAULT_BOTS=[
+{name:"Lina 🦊",xp:780,correct:74,total:90,quiz:12},
+{name:"Adam 🐼",xp:1240,correct:118,total:145,quiz:18},
+{name:"Sofia 🦄",xp:520,correct:48,total:62,quiz:8},
+{name:"Yanis 🚀",xp:310,correct:29,total:40,quiz:5},
+{name:"Maya 🐉",xp:1860,correct:171,total:200,quiz:26},
+{name:"Noah 🤖",xp:95,correct:8,total:12,quiz:2}
+];
+let S=load();
+let state={subject:null,questions:[],i:0,score:0,answered:false,sessionXp:0,sessionCorrect:0,sessionTotal:0,subjectsPlayed:new Set(S.subjectsPlayed||[])};
+
+function load(){try{const d=JSON.parse(localStorage.getItem("schoolquest")||"null");if(d)return d}catch(e){}
+return{name:"Joueur",avatar:"🦊",xp:0,correct:0,total:0,quiz:0,streak:0,bestStreak:0,badges:[],owned:[],subjectsPlayed:[],bots:DEFAULT_BOTS};}
+function save(){localStorage.setItem("schoolquest",JSON.stringify(S));render();}
+function level(){return Math.floor(S.xp/250)+1}
+function accuracy(){return S.total?Math.round(S.correct/S.total*100):0}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2200)}
+function confetti(){const c=document.getElementById("confetti");c.innerHTML="";const colors=["#ffc93c","#4f7cff","#2fd07a","#a06bff","#ff5d73"];for(let i=0;i<60;i++){const d=document.createElement("i");d.style.left=Math.random()*100+"vw";d.style.top="-20px";d.style.background=colors[i%colors.length];d.style.animationDelay=(Math.random()*.8)+"s";d.style.transform=`rotate(${Math.random()*360}deg)`;c.appendChild(d)}setTimeout(()=>c.innerHTML="",3200)}
+function checkBadges(){BADGES.forEach(b=>{if(S.badges.includes(b.id))return;let ok=false;
+if(b.need&&S.quiz>=b.need)ok=true;if(b.needXp&&S.xp>=b.needXp)ok=true;if(b.needStreak&&S.bestStreak>=b.needStreak)ok=true;
+if(b.id==="perfect"&&state.lastPerfect)ok=true;if(b.id==="all"&&state.subjectsPlayed.size>=5)ok=true;
+if(ok){S.badges.push(b.id);toast(`🏆 Trophée débloqué : ${b.name}`);confetti()}})}
+function award(correct){S.total++;if(correct){S.correct++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);S.xp+=10;state.sessionXp+=10;state.sessionCorrect++}else{S.streak=0}
+state.sessionTotal++;save();checkBadges()}
+function finishQuiz(){S.quiz++;if(state.score===state.questions.length){state.lastPerfect=true}else state.lastPerfect=false;save();checkBadges();confetti();toast(`Quiz terminé : ${state.score}/${state.questions.length} • +${state.sessionXp} XP`)}
+
+function go(id){document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));document.getElementById(id).classList.remove("hidden");document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.page===id));window.scrollTo({top:0,behavior:"smooth"});render()}
+function openProfile(){document.getElementById("nameInput").value=S.name;document.getElementById("avatarInput").value=S.avatar;document.getElementById("profileModal").classList.remove("hidden")}
+function closeProfile(){document.getElementById("profileModal").classList.add("hidden")}
+function saveProfile(){S.name=document.getElementById("nameInput").value.trim()||"Joueur";S.avatar=document.getElementById("avatarInput").value;closeProfile();save();toast("Profil enregistré ✅")}
+function startQuiz(subjectId){const subject=SUBJECTS.find(s=>s.id===subjectId);state.subject=subject;state.questions=[...BANK[subjectId]].sort(()=>Math.random()-.5).slice(0,5);state.i=0;state.score=0;state.sessionXp=0;state.sessionCorrect=0;state.sessionTotal=0;
+if(!state.subjectsPlayed.has(subjectId)){state.subjectsPlayed.add(subjectId);S.subjectsPlayed=[...state.subjectsPlayed]}
+document.getElementById("quizTitle").textContent=`${subject.emoji} ${subject.name}`;document.getElementById("quizMeta").textContent="5 questions • 10 XP par bonne réponse";go("quiz");showQuestion()}
+function showQuestion(){const q=state.questions[state.i];state.answered=false;document.getElementById("nextBtn").disabled=true;document.getElementById("feedback").textContent="";document.getElementById("qbar").style.width=(state.i/state.questions.length*100)+"%";document.getElementById("quizXp").textContent=state.sessionXp;
+document.getElementById("quizBody").innerHTML=`<div class="question">Question ${state.i+1}/${state.questions.length}<br>${q.q}</div><div class="answers">${q.a.map((a,i)=>`<button class="answer" onclick="answer(${i})">${a}</button>`).join("")}</div>`}
+function answer(i){if(state.answered)return;state.answered=true;const q=state.questions[state.i];const buttons=[...document.querySelectorAll(".answer")];buttons.forEach((b,idx)=>{b.disabled=true;if(idx===q.c)b.classList.add("correct");if(idx===i&&i!==q.c)b.classList.add("wrong")});
+const ok=i===q.c;if(ok)state.score++;award(ok);document.getElementById("feedback").textContent=ok?`✅ Bravo ! +10 XP — ${q.e}`:`❌ Réponse : ${q.a[q.c]} — ${q.e}`;document.getElementById("nextBtn").disabled=false;document.getElementById("qbar").style.width=((state.i+1)/state.questions.length*100)+"%";document.getElementById("quizXp").textContent=state.sessionXp}
+function nextQuestion(){state.i++;if(state.i>=state.questions.length){finishQuiz();go("home")}else showQuestion()}
+function buy(item){if(S.owned.includes(item.id)){toast("Déjà possédé ✅");return}if(S.xp<item.cost){toast("Pas assez d’XP 😅");return}S.xp-=item.cost;S.owned.push(item.id);if(item.id==="theme_night"||item.id==="theme_gold")applyTheme(item.id);save();toast(`Débloqué : ${item.name} 🎉`);confetti()}
+function applyTheme(id){if(id==="theme_gold"){document.body.style.background="linear-gradient(135deg,#2a1f00,#3b2d00)";document.documentElement.style.setProperty("--card","#2b2100")}if(id==="theme_night"){document.body.style.background="#05070f";document.documentElement.style.setProperty("--card","#0d1225")}}
+function leaderboard(){const me={name:S.name,avatar:S.avatar,xp:S.xp,correct:S.correct,total:S.total,quiz:S.quiz,me:true};return[me,...S.bots].sort((a,b)=>b.xp-a.xp)}
+function render(){document.getElementById("xp").textContent=S.xp;document.getElementById("streak").textContent=S.streak;document.getElementById("level").textContent=level();
+document.getElementById("s-quiz").textContent=S.quiz;document.getElementById("s-correct").textContent=S.correct;document.getElementById("s-accuracy").textContent=accuracy()+"%";
+const lb=leaderboard();document.getElementById("s-rank").textContent="#"+(lb.findIndex(x=>x.me)+1);
+document.getElementById("subjectGrid").innerHTML=SUBJECTS.slice(0,4).map(s=>`<div class="card" onclick="startQuiz('${s.id}')"><div class="emoji">${s.emoji}</div><h3>${s.name}</h3><p>${s.desc}</p><div class="bar"><i style="width:${Math.min(100,Math.round((S.subjectsPlayed.includes(s.id)?70:10)))}%"></i></div></div>`).join("");
+document.getElementById("allSubjects").innerHTML=SUBJECTS.map(s=>`<div class="card" onclick="startQuiz('${s.id}')"><div class="emoji">${s.emoji}</div><h3>${s.name}</h3><p>${s.desc}</p><div class="bar"><i style="width:${S.subjectsPlayed.includes(s.id)?70:10}%"></i></div></div>`).join("");
+const badgeHtml=BADGES.map(b=>`<span class="badge ${S.badges.includes(b.id)?"":"locked"}">${b.emoji} ${b.name} — ${b.desc}</span>`).join("");
+document.getElementById("badges").innerHTML=badgeHtml;document.getElementById("badges2").innerHTML=badgeHtml;
+document.getElementById("lbBody").innerHTML=lb.map((p,i)=>`<tr class="${i===0?"rank1":i===1?"rank2":i===2?"rank3":""}"><td>${i===0?"🥇":i===1?"🥈":i===2?"🥉":"#"+(i+1)}</td><td>${p.avatar} ${p.name}${p.me?" <span class='badge'>toi</span>":""}</td><td><b>${p.xp}</b> XP</td><td>${p.total?Math.round(p.correct/p.total*100)+"%":"—"}</td><td>${p.quiz}</td></tr>`).join("");
+document.getElementById("shop").innerHTML=SHOP.map(x=>`<div class="row" style="border-bottom:1px solid #ffffff10;padding:10px 0"><div><b>${x.name}</b><br><small style="color:var(--muted)">${x.desc}</small></div><button class="btn" onclick='buy(${JSON.stringify(x).replace(/"/g,"&quot;")})'>${S.owned.includes(x.id)?"Possédé ✅":x.cost+" XP"}</button></div>`).join("")}
+document.getElementById("tabs").innerHTML=[["home","🏠 Accueil"],["matieres","📚 Matières"],["classement","🏆 Classement"],["recompenses","🎁 Récompenses"]].map(([id,label])=>`<button class="tab" data-page="${id}" onclick="go('${id}')">${label}</button>`).join("");
+if(S.owned.includes("theme_night"))applyTheme("theme_night");if(S.owned.includes("theme_gold"))applyTheme("theme_gold");
+go("home");
+</script>
+</body>
+</html>
